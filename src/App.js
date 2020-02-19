@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
 import './App.css';
 import Album from './components/Album';
+import GoogleAPI from './components/GoogleAPI';
 
 
 function App() {
   return (
-    <div className="App">
-      <Album />
-    </div>
+    <GoogleAPI />
   );
 }
 
