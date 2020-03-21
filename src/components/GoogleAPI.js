@@ -2,7 +2,7 @@ import React from "react";
 import GoogleLogin from "react-google-login";
 
 
-const clientId = "201040501851-rb5dcr909h6mla2a34on9u2rgo0a7fa1.apps.googleusercontent.com";
+const clientId = "839718518795-advg62g6djcnggvn6dm66idufa1pa8nk.apps.googleusercontent.com";
 
 const responseGoogle = response => {
     console.log(response);
@@ -24,7 +24,7 @@ class GoogleAPI extends React.Component {
         return (
             <GoogleLogin
                 clientId={clientId}
-                scope='https://www.googleapis.com/auth/drive.photos.readonly'
+                scope='https://www.googleapis.com/auth/photoslibrary.readonly'
                 buttonText='Login'
                 onSuccess={responseGoogle}
                 onFailure={responseGoogle}
