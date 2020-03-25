@@ -1,27 +1,26 @@
-from numpy import *
+import numpy as np
 from PIL import Image
 import time
 import os
 import cv2
 from skimage import io
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 
 
 def preprocessing(google_photos_urls):
-    for url in google_photos_urls:
-        img = io.imread(url)
-        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    surf = cv2.xfeatures2d.SURF_create(400)
+    surf.setHessianThreshold(5000)
+    print("======")
+    for url1 in google_photos_urls:
+        img1 = io.imread(url1)
+        img1 = cv2.cvtColor(img1, cv2.COLOR_RGB2BGR)
         #cv2.imwrite("uploads/google_photos/" + str(i) + ".jpg", img)
-
-        # Extract surf features
-        surf = cv2.xfeatures2d.SURF_create()
-        (kps, descs) = surf.detectAndCompute(img, None)
-        print (len(kps), descs.shape)
-
-        # kps are surf keypoints (https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_surf_intro/py_surf_intro.html)
-        # descs is a 2d array with dimensions (# features , 64) (which is the same as CAPSULE)
-        # probably will need to get only 512 features(rows) out of each image
-        # which ones would we get then??? first 512? what about images that have less features
-
+        (kp1, des1) = surf.detectAndCompute(img1, None)
+        print(len(kp1))
+        img2 = cv2.drawKeypoints(img1, kp1, None, (255,0,0),4)
+        # plt.imshow(img2), plt.show()
 
 def group(filenames):
     # Return list of lists where each list is an "album"
