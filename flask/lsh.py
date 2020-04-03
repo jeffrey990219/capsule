@@ -15,6 +15,7 @@ from array import array
 from collections import defaultdict
 import heapq
 from datasketch import MinHash
+from bitstring import BitArray
 
 # 2D matrix is used for each of the L hashtables.
 # Height is 2^K keys
@@ -46,37 +47,43 @@ class Array2D(object):
 
 # Hash function factory for each hashtable.
 # TODO: not sure if this is right hash function to use. Any ideas?
-def hashfuncFactoryH(m, i):
-    def f(arr):
-        minn = float('inf')
-        for item in arr:
-            h = mmh3.hash(item, seed = i) % m
-            if h < minn:
-                minn = h
-        return minn
+# simhash
+def hashfuncFactoryH(m, i, j):
+    def f(key):
+        return mmh3.hash(key, seed = i * 4 + j) % m;
+    return f
+
+def hashfuncFactoryG(m, i, j):
+    def f(key):
+        return -1 if mmh3.hash(key, seed = (i * 4 + j) + 9999) % 2 == 0 else 1
     return f
 
 # LSH class
 class LSH():
     def __init__(self, L, K, num_features, num_images):
-        self.surf = cv2.xfeatures2d.SIFT_create(400) # SURF
+        self.surf = cv2.xfeatures2d.SURF_create(400) # SURF
         self.L = L # number of hashtables
-        self.K = K # number of bits for each hashtable's keys
+        self.K = 20 # number of bits for each hashtable's keys
         self.num_features = num_features # number of features to extract
         self.num_images = num_images # total number of images
         self.bit_array_lst = [Array2D(self.num_images, 2 ** self.K) for _ in range(self.L)] # hashtables
-        self.hash_func_lst = [hashfuncFactoryH(2 ** self.K, i) for i in range(self.L)] # hash functions
-        self.num_features_dict = {}
+        self.hash_func_lst = [[hashfuncFactoryH(self.K / 4, i, j) for j in range(4)] for i in range(self.L)] # hash functions
+        self.g_func_lst = [[hashfuncFactoryG(2, i, j) for j in range(4)] for i in range(self.L)] # hash functions
         self.count = 0
 
     def query(self, key): 
         counts_dict = defaultdict(int)
         (kp, des) = self.surf.detectAndCompute(key, None) # extract features
         # For each feature, hash it and probe buckets to find similar images' indices.
-        for i in range(self.num_features): 
+        for i in range(self.num_features):
             surf_feature = des[i:i+1][0]
             for j in range(self.L):
-                hash_index = self.hash_func_lst[j](surf_feature)
+                B = [0] * self.K
+                for attr in surf_feature:
+                    for h in range(4):
+                        B[self.K / 4 * (h - 1) + self.hash_func_lst[j][h](attr)] += attr * self.g_func_lst[j][h](attr)
+                b = BitArray(B)
+                hash_index = b.uint
                 sim_lst = self.bit_array_lst[j].probeBucket(hash_index)
                 for img_index in sim_lst:
                     counts_dict[img_index] += 1
@@ -88,8 +95,6 @@ class LSH():
 
     def insert(self, key, bit_index):
         (kp, des) = self.surf.detectAndCompute(key, None)
-        self.num_features_dict[self.count] = len(kp)
-        self.count += 1
         # img2 = cv2.drawKeypoints(key,kp,None,(255,0,0),4)
         # cv2.imshow('ok', img2)
         # cv2.waitKey(0)
@@ -101,7 +106,12 @@ class LSH():
         for i in range(self.num_features):
             surf_feature = des[i:i+1][0]
             for j in range(self.L):
-                hash_index = self.hash_func_lst[j](surf_feature)
+                B = [0] * self.K
+                for attr in surf_feature:
+                    for h in range(4):
+                        B[self.K / 4 * (h - 1) + self.hash_func_lst[j][h](attr)] += attr * self.g_func_lst[j][h](attr)
+                b = BitArray(B)
+                hash_index = b.uint
                 self.bit_array_lst[j][(bit_index, hash_index)] = True
         return des
 
@@ -136,7 +146,7 @@ def group(filenames):
 def preprocessing2():
     filenames = []
     num_images = len(glob.glob('uploads/google_photos/*.jpg'))
-    lsh = LSH(16, 18, 300, num_images) # TODO: find a good K and L
+    lsh = LSH(10, 12, 500, num_images) # TODO: find a good K and L
     for i, filename in enumerate(glob.glob('uploads/google_photos/*.jpg')):
         print(i, filename)
         filenames.append(filename)
@@ -151,7 +161,7 @@ def preprocessing2():
         print(filenames[item[0]])
 
 def preprocessing3():
-    lsh = LSH(10,12,400,3)
+    lsh = LSH(10,12,285,3)
     query_image = cv2.imread("uploads/google_photos/17.jpg")
     des1 = lsh.insert(query_image, 0)
     np.set_printoptions(threshold=np.inf, linewidth=np.inf)  # turn off summarization, line-wrapping
@@ -167,6 +177,6 @@ def preprocessing3():
     np.set_printoptions(threshold=np.inf, linewidth=np.inf)  # turn off summarization, line-wrapping
     with open("14.txt", 'w') as f:
         f.write(np.array2string(des3, separator=', '))
-    g = lsh.query(query_image)
+    des1 - des2
 
 preprocessing2()
