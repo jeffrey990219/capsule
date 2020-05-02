@@ -3,10 +3,19 @@
 <a href="{{ url_for('upload') }}">Back</a><p>
 
 <ul>
-{% for file_url in groups %}
-	{% for file_url2 in file_url %}
-    	<li><img style="height: 150px" src="{{ file_url2 }}"></li>
+    Queries:
+    <div class="row">
+        {% for file_url in queries %}
+            <li><img style="height: 150px" src="{{ file_url }}"></li>
+        {% endfor %}
+    </div>
+    Results:
+    <div class="row">
+        {% for file_url in groups %}
+        {% for file_url2 in file_url %}
+            <li><img style="height: 150px" src="{{ file_url2 }}"></li>
+        {% endfor %}
+        <li><p>-----------------------------</p></li>
     {% endfor %}
-    <li><p>This is a paragraph.</p></li>
-{% endfor %}
+    </div>
 </ul>

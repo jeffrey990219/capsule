@@ -33,6 +33,9 @@ def save():
 	urls = []
 	for i in range(len(items)):
 		url = items[i]['baseUrl']
+		img = io.imread(url)
+		img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+		cv2.imwrite("static/google_photos/" + str(i) + ".jpg", img)
 		urls.append(url)
 	end = time.time()
 	print (end - start)
