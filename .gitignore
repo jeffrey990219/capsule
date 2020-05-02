@@ -17,3 +17,5 @@ credentials.json
 ./flask/training_imgs/
 ./flask/uploads/
 ./flask/albums/
+./flask/static/google_photos/*
+./flask/static/new_photos/*
