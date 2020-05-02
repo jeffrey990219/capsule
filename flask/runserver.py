@@ -11,6 +11,7 @@ import functools
 from skimage import io
 import cv2
 from glob import glob
+import shutil
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -66,13 +67,17 @@ def query():
     session.pop('query_filenames', None)
     results = []
     for i, g in enumerate(groups):
+        if not os.path.exists('albums/Album ' + str(i)):
+            os.mkdir('albums/Album ' + str(i))
         new_res = []
         for item in g:
-            print(os.path.basename(item))
-            new_res.append(os.path.join(app.config['UPLOAD_FOLDER'], os.path.basename(item)))
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], os.path.basename(item))
+            new_res.append(filepath)
+            shutil.copy(filepath, 'albums/Album ' + str(i) + '/' + os.path.basename(item))
         results.append(new_res)
-    print(results)
     return render_template('results.html', queries = filenames, groups = results)
+
+
 
 if __name__ == '__main__':
     HOST = os.environ.get('SERVER_HOST', 'localhost')

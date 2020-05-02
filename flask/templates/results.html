@@ -1,21 +1,93 @@
 
-<h1>Grouped Results</h1>
-<a href="{{ url_for('upload') }}">Back</a><p>
+<html>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial;
+}
+
+.header {
+    text-align: center;
+    padding: 32px;
+}
+
+.row {
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    -ms-flex-wrap: wrap; /* IE10 */
+    flex-wrap: wrap;
+    padding: 0 4px;
+}
+
+/* Create four equal columns that sits next to each other */
+.column {
+    -ms-flex: 25%; /* IE10 */
+    flex: 25%;
+    max-width: 25%;
+    padding: 0 4px;
+}
+
+.column img {
+    margin-top: 8px;
+    vertical-align: middle;
+    width: 100%;
+}
+
+.ImageBorder
+{
+    border-width: 5px;
+    border-color: white;
+}
+
+/* Responsive layout - makes a two column-layout instead of four columns */
+@media screen and (max-width: 800px) {
+    .column {
+    -ms-flex: 50%;
+    flex: 50%;
+    max-width: 50%;
+    }
+}
+
+/* Responsive layout - makes the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .column {
+    -ms-flex: 100%;
+    flex: 100%;
+    max-width: 100%;
+    }
+}
+</style>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1>Query Albums Grid</h1>
+    <p>Displays each query image with most similar images as an album.</p>
+    <a href="{{ url_for('upload') }}">Back</a><p>
+</div>
+
+</body>
+</html>
 
 <ul>
-    Queries:
+{% for file_url in groups %}
+
+    Query:
     <div class="row">
-        {% for file_url in queries %}
-            <li><img style="height: 150px" src="{{ file_url }}"></li>
-        {% endfor %}
+        <img style="height: 150px" src="{{ queries[loop.index0] }}" class="ImageBorder">
     </div>
-    Results:
+    Album:
     <div class="row">
-        {% for file_url in groups %}
         {% for file_url2 in file_url %}
-            <li><img style="height: 150px" src="{{ file_url2 }}"></li>
+            <img style="height: 150px" src="{{ file_url2 }} " class="ImageBorder">
         {% endfor %}
-        <li><p>-----------------------------</p></li>
-    {% endfor %}
     </div>
+    <br>
+    <br>
+    <br>
+{% endfor %}
 </ul>
