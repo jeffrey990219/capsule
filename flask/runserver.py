@@ -66,9 +66,15 @@ def query():
     groups = group(filenames)
     session.pop('query_filenames', None)
     results = []
+    try:
+        shutil.rmtree('albums')
+    except:
+        pass
+    os.mkdir('albums')
     for i, g in enumerate(groups):
         if not os.path.exists('albums/Album ' + str(i)):
             os.mkdir('albums/Album ' + str(i))
+        shutil.copy(filenames[i], 'albums/Album ' + str(i) + '/' + os.path.basename(filenames[i]))
         new_res = []
         for item in g:
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], os.path.basename(item))
