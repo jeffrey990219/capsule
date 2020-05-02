@@ -14,4 +14,4 @@ client_secret.json
 credentials.json
 *.pyc
 ./flask/training
-./uploads
+./flask/uploads
