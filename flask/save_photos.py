@@ -9,7 +9,7 @@ SCOPES = 'https://www.googleapis.com/auth/photoslibrary.readonly'
 
 def save():
 	# Google Photos authentication
-	start  =time.time()
+	start = time.time()
 	store = file.Storage('credentials.json')
 	creds = None
 	if not creds or creds.invalid:

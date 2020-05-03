@@ -82,21 +82,21 @@ def group(query_img_urls):
     return results
 
 
-if __name__ == "__main__":
-    CAPSULE = Capsule()
-    print(cv2.__version__)
-    training_img_urls = sorted(glob('./uploads/google_photos/*.jpg'))
-    num_all_imgs = len(training_img_urls)
-    inserted = 0
-    for url in training_img_urls:
-        CAPSULE.insert(url)
-        inserted += 1
-        print("%d / %d INSERTED" %(inserted, num_all_imgs))
+# if __name__ == "__main__":
+#     CAPSULE = Capsule()
+#     print(cv2.__version__)
+#     training_img_urls = sorted(glob('./uploads/google_photos/*.jpg'))
+#     num_all_imgs = len(training_img_urls)
+#     inserted = 0
+#     for url in training_img_urls:
+#         CAPSULE.insert(url)
+#         inserted += 1
+#         print("%d / %d INSERTED" %(inserted, num_all_imgs))
 
-    query_img_urls = sorted(glob('./uploads/google_photos/*test*'))
-    for q_url in query_img_urls:
-        print("QUERY: %s" %q_url)
-        start_time = time.time()
-        CAPSULE.query_similar_imgs(q_url)
-        end_time = time.time()
-        print("Finished in %.2f seconds" %((end_time - start_time) / 10**9))
+#     query_img_urls = sorted(glob('./uploads/google_photos/*test*'))
+#     for q_url in query_img_urls:
+#         print("QUERY: %s" %q_url)
+#         start_time = time.time()
+#         CAPSULE.query_similar_imgs(q_url)
+#         end_time = time.time()
+#         print("Finished in %.2f seconds" %((end_time - start_time) / 10**9))
