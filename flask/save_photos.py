@@ -9,7 +9,7 @@ SCOPES = 'https://www.googleapis.com/auth/photoslibrary.readonly'
 
 def save():
 	# Google Photos authentication
-	start  =time.time()
+	start = time.time()
 	store = file.Storage('credentials.json')
 	creds = None
 	if not creds or creds.invalid:
@@ -38,5 +38,6 @@ def save():
 		cv2.imwrite("static/google_photos/" + str(i) + ".jpg", img)
 		urls.append(url)
 	end = time.time()
-	print (end - start)
+
+	print("%d images have been downloaded into 'static/google_photos/' in %d seconds." %(len(items), end - start))
 	return urls
