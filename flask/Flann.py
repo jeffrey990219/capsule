@@ -67,7 +67,6 @@ def preprocessing(google_photo_urls):
     num_all_imgs = len(google_photo_urls)
     for i, url in enumerate(google_photo_urls):
         CAPSULE.insert(url)
-        print("%d / %d INSERTED" %(i, num_all_imgs))
 
 def group(query_img_urls):
     # Return list of lists where each list is an "album"
