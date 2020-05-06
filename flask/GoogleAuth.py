@@ -1,4 +1,4 @@
-from os.path import join, dirname
+import os
 from skimage import io
 import cv2
 from googleapiclient.discovery import build
@@ -8,10 +8,11 @@ import time
 import argparse
 SCOPES = 'https://www.googleapis.com/auth/photoslibrary'
 
-def save():
+def save(google_photos_path, client_secret_path, credentials_path):
 	# Google Photos authentication
 	start = time.time()
-	store = file.Storage('credentials.json')
+	# Store credentials.json in the same directory as client_secret.json
+	store = file.Storage(credentials_path)
 	creds = None
 	# creds = store.get() # can specify store.get() here if credentialgis are already available
 	if not creds or creds.invalid:
@@ -24,9 +25,9 @@ def save():
 	# Get items from all albums, as well as stray photos
 	nextPageToken = ''
 	items = []
-	for _ in range(1):
+	for _ in range(2):
 		results = google_photos.mediaItems().list(pageSize = 100, pageToken = nextPageToken).execute()
-		# Get all photos 100 at a time (500 max)
+		# Get all photos 100 at a time (200 max)
 		items.extend(results.get('mediaItems', []))
 		nextPageToken = results.get('nextPageToken', '')
 		if nextPageToken == '':
@@ -39,9 +40,10 @@ def save():
 		url = items[i]['baseUrl']
 		img = io.imread(url)
 		img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-		cv2.imwrite("static/google_photos/" + str(i) + ".jpg", img)
+		img_url = str(i) + ".jpg"
+		cv2.imwrite(os.path.join(google_photos_path, img_url), img)
 		urls.append(url)
 	end = time.time()
 
-	print("%d images finished downloading into 'static/google_photos/' in %d seconds." %(len(items), end - start))
+	print("%d images have been downloaded into %s in %d seconds." %(len(items), google_photos_path, end - start))
 	return urls
