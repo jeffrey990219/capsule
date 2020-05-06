@@ -1,6 +1,6 @@
 import os, shutil
 from Flann import preprocessing, group, CAPSULE
-from flask import Flask, render_template, request, session, url_for, redirect
+from flask import Flask, render_template, request, session, url_for, redirect, jsonify
 from flask_dropzone import Dropzone
 from flask_uploads import UploadSet, configure_uploads, patch_request_class, IMAGES
 from werkzeug.utils import secure_filename
@@ -8,7 +8,6 @@ from GoogleAuth import save
 from webbrowser import open
 import functools
 from skimage import io
-import cv2
 from glob import glob
 import shutil
 
@@ -53,8 +52,8 @@ except OSError:
 dropzone = Dropzone(app)
 
 # Calls save_photos.py
-@app.route('/open_save_google_photos', methods=['POST', 'GET'])
-def open_save_google_photos():
+@app.route('/done_saving')
+def done_saving():
     # Empty EXISTING_IMG_PATH folder
     try:
         shutil.rmtree(app.config['EXISTING_IMG_PATH'], ignore_errors=True)
@@ -65,7 +64,12 @@ def open_save_google_photos():
     save(app.config['EXISTING_IMG_PATH'], client_secret_path=app.config['CLIENT_SECRET_PATH'], credentials_path=app.config['CREDENTIALS_PATH'])
     preprocessing(google_photo_urls=glob(app.config['EXISTING_IMG_PATH'] + "/*.jpg"))
     print("LOADED!")
-    return redirect('/')
+    return jsonify("Done")
+
+
+@app.route("/open_save_google_photos")
+def open_save_google_photos():
+    return render_template('loading.html')
 
 # Saves query images to session['NEW_IMGS'] (there's no button associated with this)
 # Called by the dropzone stuff
@@ -109,7 +113,7 @@ def main():
                         src=tmp_path, 
                         dst=output_photo_url)
 
-                    print("IMAGE SAVED AT {}").format(output_photo_url)
+                    print("IMAGE SAVED AT {}".format(output_photo_url))
                 else:
                     # If there're similar images, update session.
                     session['SIMILAR_IMGS_MAPPING'][tmp_path] = []
@@ -137,7 +141,7 @@ def confirm_upload(upload, img_url):
             src=img_url, 
             dst=output_photo_url)
 
-        print("IMAGE SAVED AT {}").format(output_photo_url)
+        print("IMAGE SAVED AT {}".format(output_photo_url))
     else:
         os.remove(img_url)
     session.modified = True
