@@ -1,24 +1,45 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Google Photos Reorganizer</title>
-    {{ dropzone.load_css() }}
-    {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') }}
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+  <link href="{{ url_for('static', filename='css/sticky-footer.css') }}" />
+  <title>Google Photos Reorganizer</title>
+  {{ dropzone.load_css() }} {{ dropzone.style('border: 2px dashed #0087F7;
+    margin: 10%; min-height: 400px;') }}
 </head>
+
 <body>
-    <h1>Google Photos Reorganizer</h1>
-<!--     <form action="{{ url_for('query')}}" method="POST" enctype="multipart/form-data">
-        Select query image: <input type="file" name="photo" /><br />
-        <input type="submit" /> -->
-    <form action="{{ url_for('open_save_google_photos')}}" method="POST" enctype="multipart/form-data">
-        Authenticate and Save Google Photos: <input type="submit" value="Authenticate"/>
-    </form>
-    {{ dropzone.create(action='upload') }}
-    {{ dropzone.load_js() }}
-    {{ dropzone.config() }}
-    <form action="{{ url_for('query')}}" method="POST" enctype="multipart/form-data">
-        <input type="submit" style="text-align:center" value="Group"/>
-    </form>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{{url_for('main')}}">Google Photos Reorganizer</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+        </li>
+      </ul>
+    </div>
+    <a href="{{url_for('open_save_google_photos')}}" class="btn btn-success" role="button">Google Login</a>
+  </nav>
+
+  <div class="container text-center">
+    {{ dropzone.create(action='main') }} {{ dropzone.load_js() }} {{dropzone.config() }}
+    <a href="{{url_for('upload_complete')}}" class="btn btn-primary btn-lg active" role="button">Upload</a>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+
 </body>
+
 </html>
