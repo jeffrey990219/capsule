@@ -26,7 +26,7 @@ def save(google_photos_path, client_secret_path, credentials_path):
 	nextPageToken = ''
 	items = []
 	for _ in range(2):
-		results = google_photos.mediaItems().list(pageSize = 100, pageToken = nextPageToken).execute()
+		results = google_photos.mediaItems().list(pageSize = 25, pageToken = nextPageToken).execute()
 		# Get all photos 100 at a time (200 max)
 		items.extend(results.get('mediaItems', []))
 		nextPageToken = results.get('nextPageToken', '')
