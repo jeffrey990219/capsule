@@ -64,8 +64,7 @@ class Capsule():
 
 CAPSULE = Capsule()
 def preprocessing(google_photo_urls):
-    num_all_imgs = len(google_photo_urls)
-    for i, url in enumerate(google_photo_urls):
+    for url in google_photo_urls:
         CAPSULE.insert(url)
 
 def group(query_img_urls):

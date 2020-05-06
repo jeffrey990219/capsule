@@ -1,11 +1,10 @@
 import os, shutil
-#from lsh import group, preprocessing
 from Flann import preprocessing, group, CAPSULE
-from flask import Flask, render_template, request, session, url_for, redirect, jsonify
+from flask import Flask, render_template, request, session, url_for, redirect
 from flask_dropzone import Dropzone
 from flask_uploads import UploadSet, configure_uploads, patch_request_class, IMAGES
 from werkzeug.utils import secure_filename
-from save_photos import save
+from GoogleAuth import save
 from webbrowser import open
 import functools
 from skimage import io
@@ -18,9 +17,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "key"
 app.config.update(
+    CLIENT_SECRET_PATH=os.path.join('client_secret.json'),
+    CREDENTIALS_PATH=os.path.join('credentials.json'),
     EXISTING_IMG_PATH=os.path.join('static', 'google_photos'),
     NEW_IMG_PATH=os.path.join('static', 'new_photos'),
+    OUTPUT_IMG_PATH=os.path.join('..', 'FILTERED'),
     TEMP_IMG_PATH=os.path.join('static', 'tmp'),
+
     DROPZONE_ALLOWED_FILE_TYPE='image',
     DROPZONE_PARALLEL_UPLOADS=100,
     DROPZONE_UPLOAD_MULTIPLE=True,
@@ -30,15 +33,22 @@ app.config.update(
 try:
     os.mkdir(app.config['EXISTING_IMG_PATH'])
 except OSError:
-    pass
+    print("Failed to mkdir %s" %(app.config['EXISTING_IMG_PATH']))
+
 try:
     os.mkdir(app.config['NEW_IMG_PATH'])
 except OSError:
-    pass
+    print("Failed to mkdir %s" %(app.config['NEW_IMG_PATH']))
+
+try:
+    os.mkdir(app.config['OUTPUT_IMG_PATH'])
+except OSError:
+    print("Failed to mkdir %s" %(app.config['OUTPUT_IMG_PATH']))
+
 try:
     os.mkdir(app.config['TEMP_IMG_PATH'])
 except OSError:
-    pass
+    print("Failed to mkdir %s" %(app.config['TEMP_IMG_PATH']))
     
 dropzone = Dropzone(app)
 
@@ -52,8 +62,8 @@ def open_save_google_photos():
     except OSError:
         pass
     
-    save()
-    preprocessing(google_photo_urls=glob("static/google_photos/*.jpg"))
+    save(app.config['EXISTING_IMG_PATH'], client_secret_path=app.config['CLIENT_SECRET_PATH'], credentials_path=app.config['CREDENTIALS_PATH'])
+    preprocessing(google_photo_urls=glob(app.config['EXISTING_IMG_PATH'] + "/*.jpg"))
     print("LOADED!")
     return redirect('/')
 
@@ -87,13 +97,19 @@ def main():
                 # Then, query similar images to this image
                 res = CAPSULE.query_similar_imgs(query_img_url=tmp_path)
                 if len(res) == 0:
-                    # If there's no similar image, move this image from new_photos to google_photos
-                    dst_url = os.path.join(app.config['NEW_IMG_PATH'], f.filename)
+                    # If there's no similar image, copy this image from tmp to new_photos
+                    new_photo_url = os.path.join(app.config['NEW_IMG_PATH'], f.filename)
+                    shutil.copy(
+                        src=tmp_path, 
+                        dst=new_photo_url)
+                    CAPSULE.insert(new_photo_url)
+                    # Move this image to output folder
+                    output_photo_url = os.path.join(app.config['OUTPUT_IMG_PATH'], f.filename)
                     shutil.move(
                         src=tmp_path, 
-                        dst=dst_url)
-                    CAPSULE.insert(dst_url)
-                    print("IMAGE SAVED AT {}").format(dst_url)
+                        dst=output_photo_url)
+
+                    print("IMAGE SAVED AT {}").format(output_photo_url)
                 else:
                     # If there're similar images, update session.
                     session['SIMILAR_IMGS_MAPPING'][tmp_path] = []
@@ -105,16 +121,23 @@ def main():
 
 @app.route('/confirm-upload/<int:upload>/<path:img_url>')
 def confirm_upload(upload, img_url):
-    # FIXME: This is a hack for getting file_name; should store the file_name upon upload instead.
     del session['SIMILAR_IMGS_MAPPING'][img_url]
     if upload:
-        filename = img_url.split('/')[-1]
-        # Move this image from new_photos to google_photos
-        dst_url = os.path.join(app.config['NEW_IMG_PATH'], filename)
+        # FIXME: This is a hack for getting file_name; should store the file_name upon upload instead.
+        (_, filename) = os.path.split(img_url)
+        # Copy this image from new_photos to google_photos
+        new_photo_url = os.path.join(app.config['NEW_IMG_PATH'], filename)
+        shutil.copy(
+            src=img_url, 
+            dst=new_photo_url)
+        CAPSULE.insert(new_photo_url)
+        # Move this image to output folder
+        output_photo_url = os.path.join(app.config['OUTPUT_IMG_PATH'], filename)
         shutil.move(
             src=img_url, 
-            dst=dst_url)
-        CAPSULE.insert(dst_url)
+            dst=output_photo_url)
+
+        print("IMAGE SAVED AT {}").format(output_photo_url)
     else:
         os.remove(img_url)
     session.modified = True
