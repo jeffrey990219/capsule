@@ -51,7 +51,7 @@ class Capsule():
         
         top_10 = heapq.nlargest(30, min_dist_heap)
         # Compute the exact similartiy of each of the top-10 images and keep only those with score < THRESHOLD_SIM
-        THRESHOLD_SIM = 30
+        THRESHOLD_SIM = 10
         results = []
         for top_img_url in [self.IMG_DATABASE[ele[1]] for ele in top_10]:
             top_img = cv2.imread(top_img_url)

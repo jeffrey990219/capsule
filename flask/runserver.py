@@ -12,6 +12,7 @@ from skimage import io
 import cv2
 from glob import glob
 import shutil
+import time
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -43,19 +44,22 @@ except OSError:
 dropzone = Dropzone(app)
 
 # Calls save_photos.py
-@app.route('/open_save_google_photos', methods=['POST', 'GET'])
-def open_save_google_photos():
+@app.route('/slow')
+def slow():
     # Empty EXISTING_IMG_PATH folder
     try:
         shutil.rmtree(app.config['EXISTING_IMG_PATH'], ignore_errors=True)
         os.mkdir(app.config['EXISTING_IMG_PATH'])
     except OSError:
         pass
-    
     save()
     preprocessing(google_photo_urls=glob("static/google_photos/*.jpg"))
     print("LOADED!")
-    return redirect('/')
+    return jsonify("oh so slow")
+
+@app.route("/open_save_google_photos")
+def open_save_google_photos():
+    return render_template('loading.html')
 
 # Saves query images to session['NEW_IMGS'] (there's no button associated with this)
 # Called by the dropzone stuff
@@ -108,7 +112,7 @@ def confirm_upload(upload, img_url):
     # FIXME: This is a hack for getting file_name; should store the file_name upon upload instead.
     del session['SIMILAR_IMGS_MAPPING'][img_url]
     if upload:
-        filename = img_url.split('/')[-1]
+        filename = os.path.split(img_url)[-1]
         # Move this image from new_photos to google_photos
         dst_url = os.path.join(app.config['NEW_IMG_PATH'], filename)
         shutil.move(
