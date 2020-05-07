@@ -1,5 +1,7 @@
 **Google Photo Organizer**
 
+Demo Video: https://youtu.be/wOX6c0Skjjg
+
 HOW TO USE THE APP
 1. Execute **"flask/RUN_SERVER"** in the terminal. This is the server that needs to be run in the back end.
    a. If some Python modules are not installed, then install these modules using "pip install".
@@ -12,5 +14,3 @@ HOW TO USE THE APP
 6. If the app detects similar photos in your Google Photos to an uploaded photo, the app will notify and let the user decide whether to still upload that photo (Save) or not (Skip). 
 7. After you are done with uploading, the **"FILTERED"** folder will contain new images that are either distinct from the existing photos in Google Photos or similar to an existing photo yet the user still decided to upload.
 8. Now you can *manually* upload all images in 'FILTERED' to Google Photos free of concern about having near duplicates.
-
-Demo Video: https://youtu.be/wOX6c0Skjjg
