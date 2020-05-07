@@ -272,27 +272,6 @@ def bruteforce():
     # print(des3.shape)
 
 
-
-    # m = 1 - scipy.spatial.distance.cdist(des1[0:200], des1[0:200], 'cosine').reshape(-1)
-    # print(np.mean(m))
-    filenames = []
-    num_images = len(glob.glob('uploads/google_photos/*.jpg'))
-    s = cv2.xfeatures2d.SURF_create(400) # SURF
-    for i, filename in enumerate(glob.glob('uploads/google_photos/*.jpg')):
-        print(i, filename)
-        filenames.append(filename)
-        img = cv2.imread(filename)
-        (kp, des2) = s.detectAndCompute(img, None)
-        dist_matrix = euclidean_distances(des2, des1)
-        threshold = 0.01
-        count = 0
-        for row in dist_matrix:
-            for elem in row:
-                if elem > threshold:
-                    count += 1
-        print (count)
-
-
         # des2 = des2.reshape(1,-1)
 
 
