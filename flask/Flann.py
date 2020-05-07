@@ -10,9 +10,9 @@ class Capsule():
     def __init__(self):
         FLANN_INDEX_LSH = 6
         index_params_LSH = dict(algorithm = FLANN_INDEX_LSH, 
-                            table_number = 6,      # 12
-                            key_size = 12,          # 20
-                            multi_probe_level = 1)  #2
+                            table_number = 24,      # L
+                            key_size = 22,          # K
+                            multi_probe_level = 1)
         search_params = {}  # dict(checks=5)
 
         self.EXTRACTOR = cv2.ORB_create(512)
@@ -49,11 +49,12 @@ class Capsule():
         for (k, v) in frequency_count.items():
             heapq.heappush(min_dist_heap, (v, k))
         
-        top_10 = heapq.nlargest(30, min_dist_heap)
+        top_10 = heapq.nlargest(10, min_dist_heap)
         # Compute the exact similartiy of each of the top-10 images and keep only those with score < THRESHOLD_SIM
-        THRESHOLD_SIM = 10
+        THRESHOLD_SIM = 20
         results = []
         for top_img_url in [self.IMG_DATABASE[ele[1]] for ele in top_10]:
+            # results.append(top_img_url)
             top_img = cv2.imread(top_img_url)
             (kp, des) = self.EXTRACTOR.detectAndCompute(top_img, None)
             matches = self.BF.match(q_des, des)
@@ -80,21 +81,41 @@ def group(query_img_urls):
     return results
 
 
-# if __name__ == "__main__":
-#     CAPSULE = Capsule()
-#     print(cv2.__version__)
-#     training_img_urls = sorted(glob('./uploads/google_photos/*.jpg'))
-#     num_all_imgs = len(training_img_urls)
-#     inserted = 0
-#     for url in training_img_urls:
-#         CAPSULE.insert(url)
-#         inserted += 1
-#         print("%d / %d INSERTED" %(inserted, num_all_imgs))
+if __name__ == "__main__":
+    CAPSULE = Capsule()
+    # EMAIL US FOR THE DATASET (abj3@rice.edu)
+    training_img_urls = sorted(glob('training/*/*.jpg'))
+    query_img_urls = sorted(glob('training/*/*test*'))
+    training_img_urls = set(training_img_urls) - set(query_img_urls)
 
-#     query_img_urls = sorted(glob('./uploads/google_photos/*test*'))
-#     for q_url in query_img_urls:
-#         print("QUERY: %s" %q_url)
-#         start_time = time.time()
-#         CAPSULE.query_similar_imgs(q_url)
-#         end_time = time.time()
-#         print("Finished in %.2f seconds" %((end_time - start_time) / 10**9))
+    num_all_imgs = len(training_img_urls)
+    inserted = 0
+    for url in training_img_urls:
+        CAPSULE.insert(url)
+        inserted += 1
+        print("%d / %d INSERTED" %(inserted, num_all_imgs))
+
+    total = 0.0
+    total_count = 0
+    total_queried_counts = 0
+    for q_url in query_img_urls:
+        folder = q_url.split('\\')[-2]
+        count = 0
+        print("QUERY: %s" %q_url)
+        start_time = time.time()
+        similar_folders = CAPSULE.query_similar_imgs(q_url)
+        end_time = time.time()
+        print("Finished in %.2f seconds" %((end_time - start_time)))
+        total += end_time - start_time
+        for similar_folder in similar_folders:
+            if similar_folder.split('\\')[-2] == folder:
+                count += 1
+        total_count += count
+        total_queried_counts += len(similar_folders)
+        print(count, len(similar_folders))
+
+    print(total_count)
+    print(total_queried_counts)
+    print(total)
+    print(len(query_img_urls))
+
