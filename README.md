@@ -7,9 +7,10 @@ flask/RUN_SERVER
 ```
    a. If some Python modules are not installed, then install these modules using "pip install".
    b. If running this file does not work, run Server.py directly via either Python 2 or 3
-     ```shell
-      python Server.py
-      ```
+```shell
+python Server.py
+```
+
 2. When the server is on, open a browser and go to http://localhost:5555/
 3. Click the green "Google Login" button to allow the app to authenticate and access your Google Photos (new tab will open).
    a. Make sure that whichever Google account you select actually has photos in Google Photos.
