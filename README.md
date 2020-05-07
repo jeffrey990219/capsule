@@ -7,4 +7,6 @@ HOW TO USE THE APP
 3. Click the green "Google Login" button to allow the app to access your Google Photos. After the photos are loaded, you can start uploading photos.
    1. If the app detects similar photos in Google Photos to a photo to be uploaded, the app will notify and let the user decide whether to still upload that photo or to skip it.
 4. After you are done with uploading, the **"FILTERED"** folder will contain new images that are either distinct from existing photos in Google Photos or similar to an existing photo yet the user still decided to upload.
-5. Now you can *manually* upload all images in 'FILTERED' to Google Photos free of concern about having near duplicates.
+5. Now you can *manually* upload all images in "FILTERED" to Google Photos free of concern about having near duplicates.
+
+Demo Video: https://youtu.be/wOX6c0Skjjg
