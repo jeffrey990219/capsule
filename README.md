@@ -3,7 +3,7 @@
 Demo Video: https://youtu.be/wOX6c0Skjjg
 
 HOW TO USE THE APP
-1. Execute **"flask/RUN_SERVER"** in the terminal. This is the server that needs to be run in the back end.
+1. "cd" into "flask" and run **"./RUN_SERVER"**. This is the server that needs to be run in the back end.
    1. If some Python modules are not installed, then install these modules using "pip install".
    2. If running this file does not work, run Server.py directly via either Python 2 or 3 **"python flask/Server.py"**
 2. When the server is on, open a browser and go to http://localhost:5555/
