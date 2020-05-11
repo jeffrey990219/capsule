@@ -1,6 +1,7 @@
 **Google Photo Organizer**
 
 Demo Video: https://youtu.be/wOX6c0Skjjg
+Report: https://docs.google.com/document/d/1MoAxWuvk_12WVReot2gNLqAcPsRuIY409TE8VgW3Vm4/edit?usp=sharing
 
 HOW TO USE THE APP
 1. "cd" into "flask" and run **"./RUN_SERVER"**. This is the server that needs to be run in the back end.
